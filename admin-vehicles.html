@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Management - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .vehicles-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .action-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .vehicles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .vehicle-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .vehicle-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .vehicle-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .vehicle-details {
+            padding: 20px;
+        }
+
+        .vehicle-name {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin: 0 0 10px;
+        }
+
+        .vehicle-type {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .vehicle-price {
+            color: #2ecc71;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .vehicle-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        .status-available {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .status-rented {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-maintenance {
+            background: #f1c40f;
+            color: white;
+        }
+
+        .vehicle-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .success-message {
+            background: #00C851;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .filter-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            min-width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="vehicles-container">
+        <div class="page-header">
+            <h1 class="header-title">Vehicle Management</h1>
+            <button class="action-button" onclick="showAddVehicleModal()">
+                <i class="fas fa-plus"></i>
+                Add New Vehicle
+            </button>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Search vehicles..." onkeyup="filterVehicles()">
+            <select class="filter-select" onchange="filterVehicles()">
+                <option value="all">All Types</option>
+                <option value="bike">Bikes</option>
+                <option value="scooter">Scooters</option>
+                <option value="moped">Mopeds</option>
+            </select>
+            <select class="filter-select" onchange="filterVehicles()">
+                <option value="all">All Status</option>
+                <option value="available">Available</option>
+                <option value="rented">Rented</option>
+                <option value="maintenance">Maintenance</option>
+            </select>
+        </div>
+
+        <div id="vehiclesGrid" class="vehicles-grid">
+            <div class="loading">Loading vehicles...</div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Vehicle Modal -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeVehicleModal()">&times;</span>
+            <h2 id="modalTitle">Add New Vehicle</h2>
+            <form id="vehicleForm">
+                <input type="hidden" id="vehicleId">
+                <div class="form-group">
+                    <label for="vehicleName">Vehicle Name:</label>
+                    <input type="text" id="vehicleName" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleType">Type:</label>
+                    <select id="vehicleType" required>
+                        <option value="bike">Bike</option>
+                        <option value="scooter">Scooter</option>
+                        <option value="moped">Moped</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vehiclePrice">Price per Day (₹):</label>
+                    <input type="number" id="vehiclePrice" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="vehicleDescription">Description:</label>
+                    <input type="text" id="vehicleDescription" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleMileage">Mileage (km/l):</label>
+                    <input type="number" id="vehicleMileage" required min="0">
+                </div>
+                <div class="form-group">
+                    <label for="vehicleSeats">Number of Seats:</label>
+                    <input type="number" id="vehicleSeats" required min="1" max="3">
+                </div>
+                <div class="form-group">
+                    <label for="vehicleStatus">Status:</label>
+                    <select id="vehicleStatus" required>
+                        <option value="available">Available</option>
+                        <option value="rented">Rented</option>
+                        <option value="maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Save Vehicle</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+            
+            if (!token || userType !== 'admin') {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+
+        // Fetch vehicles
+        async function fetchVehicles() {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:3000/api/vehicles', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vehicles');
+                }
+
+                const data = await response.json();
+                displayVehicles(data.vehicles);
+            } catch (error) {
+                console.error('Error fetching vehicles:', error);
+                showError('Failed to load vehicles');
+            }
+        }
+
+        // Display vehicles
+        function displayVehicles(vehicles) {
+            const grid = document.getElementById('vehiclesGrid');
+            if (!vehicles || vehicles.length === 0) {
+                grid.innerHTML = '<div class="loading">No vehicles found</div>';
+                return;
+            }
+
+            grid.innerHTML = vehicles.map(vehicle => `
+                <div class="vehicle-card" data-type="${vehicle.type}" data-status="${vehicle.status}">
+                    <img src="${vehicle.image || 'images/default-vehicle.jpg'}" 
+                         alt="${vehicle.name}" 
+                         class="vehicle-image"
+                         onerror="this.src='images/default-vehicle.jpg'">
+                    <div class="vehicle-details">
+                        <h3 class="vehicle-name">${vehicle.name}</h3>
+                        <div class="vehicle-type">${vehicle.type}</div>
+                        <div class="vehicle-status status-${vehicle.status}">${vehicle.status}</div>
+                        <div class="vehicle-price">₹${vehicle.price}/day</div>
+                        <div class="vehicle-actions">
+                            <button class="action-btn edit-btn" onclick="editVehicle('${vehicle._id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteVehicle('${vehicle._id}')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Filter vehicles
+        function filterVehicles() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const typeFilter = document.querySelector('.filter-select').value;
+            const statusFilter = document.querySelectorAll('.filter-select')[1].value;
+
+            const cards = document.querySelectorAll('.vehicle-card');
+            cards.forEach(card => {
+                const name = card.querySelector('.vehicle-name').textContent.toLowerCase();
+                const type = card.dataset.type;
+                const status = card.dataset.status;
+
+                const matchesSearch = name.includes(searchTerm);
+                const matchesType = typeFilter === 'all' || type === typeFilter;
+                const matchesStatus = statusFilter === 'all' || status === statusFilter;
+
+                card.style.display = matchesSearch && matchesType && matchesStatus ? '' : 'none';
+            });
+        }
+
+        // Show add vehicle modal
+        function showAddVehicleModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Vehicle';
+            document.getElementById('vehicleForm').reset();
+            document.getElementById('vehicleId').value = '';
+            document.getElementById('vehicleModal').style.display = 'block';
+        }
+
+        // Show edit vehicle modal
+        async function editVehicle(id) {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3000/api/vehicles/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch vehicle details');
+                }
+
+                const vehicle = await response.json();
+                document.getElementById('modalTitle').textContent = 'Edit Vehicle';
+                document.getElementById('vehicleId').value = vehicle._id;
+                document.getElementById('vehicleName').value = vehicle.name;
+                document.getElementById('vehicleType').value = vehicle.type;
+                document.getElementById('vehiclePrice').value = vehicle.price;
+                document.getElementById('vehicleDescription').value = vehicle.description;
+                document.getElementById('vehicleMileage').value = vehicle.mileage;
+                document.getElementById('vehicleSeats').value = vehicle.seats;
+                document.getElementById('vehicleStatus').value = vehicle.status;
+
+                document.getElementById('vehicleModal').style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching vehicle details:', error);
+                showError('Failed to load vehicle details');
+            }
+        }
+
+        // Close vehicle modal
+        function closeVehicleModal() {
+            document.getElementById('vehicleModal').style.display = 'none';
+        }
+
+        // Handle vehicle form submission
+        document.getElementById('vehicleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                const vehicleId = document.getElementById('vehicleId').value;
+                const vehicleData = {
+                    name: document.getElementById('vehicleName').value,
+                    type: document.getElementById('vehicleType').value,
+                    price: document.getElementById('vehiclePrice').value,
+                    description: document.getElementById('vehicleDescription').value,
+                    mileage: document.getElementById('vehicleMileage').value,
+                    seats: document.getElementById('vehicleSeats').value,
+                    status: document.getElementById('vehicleStatus').value
+                };
+
+                const url = vehicleId ? 
+                    `http://localhost:3000/api/vehicles/${vehicleId}` : 
+                    'http://localhost:3000/api/vehicles';
+                
+                const method = vehicleId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(vehicleData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save vehicle');
+                }
+
+                showSuccess(vehicleId ? 'Vehicle updated successfully' : 'Vehicle added successfully');
+                closeVehicleModal();
+                fetchVehicles();
+            } catch (error) {
+                console.error('Error saving vehicle:', error);
+                showError('Failed to save vehicle');
+            }
+        });
+
+        // Delete vehicle
+        async function deleteVehicle(id) {
+            if (!confirm('Are you sure you want to delete this vehicle?')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`http://localhost:3000/api/vehicles/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete vehicle');
+                }
+
+                showSuccess('Vehicle deleted successfully');
+                fetchVehicles();
+            } catch (error) {
+                console.error('Error deleting vehicle:', error);
+                showError('Failed to delete vehicle');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.querySelector('.vehicles-container').prepend(errorDiv);
+            setTimeout(() => errorDiv.remove(), 5000);
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.textContent = message;
+            document.querySelector('.vehicles-container').prepend(successDiv);
+            setTimeout(() => successDiv.remove(), 5000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            fetchVehicles();
+        });
+    </script>
+</body>
+</html> 

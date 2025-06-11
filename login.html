@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bike Rental - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .form-title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #2573a7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .error-message {
+            display: none;
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .success-message {
+            display: none;
+            background: #00C851;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .welcome-message {
+            display: none;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-message h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .welcome-message p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ecf0f1;
+        }
+
+        .welcome-message .user-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-message .user-role {
+            font-size: 18px;
+            color: #ecf0f1;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .welcome-message .action-buttons {
+            margin-top: 20px;
+        }
+
+        .welcome-message .action-button {
+            display: inline-block;
+            padding: 12px 25px;
+            margin: 0 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .welcome-message .action-button:hover {
+            background: white;
+            color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-type-toggle {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .user-type-toggle button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 5px;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-type-toggle button.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="form-title">Bike Rental Login</h2>
+        
+        <div class="user-type-toggle">
+            <button onclick="toggleLoginType('user')" class="active" id="userToggle">User Login</button>
+            <button onclick="toggleLoginType('admin')" id="adminToggle">Admin Login</button>
+        </div>
+
+        <!-- User Login Form -->
+        <form id="userLoginForm" class="login-form active">
+            <div class="form-group">
+                <label for="userEmail">Email:</label>
+                <input type="email" id="userEmail" required>
+            </div>
+            <div class="form-group">
+                <label for="userPassword">Password:</label>
+                <input type="password" id="userPassword" required>
+            </div>
+            <button type="button" class="submit-btn" onclick="handleUserLogin()">Login</button>
+        </form>
+
+        <!-- Admin Login Form -->
+        <form id="adminLoginForm" class="login-form">
+            <div class="form-group">
+                <label for="adminId">Admin ID:</label>
+                <input type="text" id="adminId" required>
+            </div>
+            <div class="form-group">
+                <label for="adminPassword">Password:</label>
+                <input type="password" id="adminPassword" required>
+            </div>
+            <div class="form-group">
+                <label for="securityCode">Security Code:</label>
+                <input type="text" id="securityCode" required>
+            </div>
+            <button type="button" class="submit-btn" onclick="handleAdminLogin()">Login</button>
+        </form>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-2x"></i>
+            <p>Processing...</p>
+        </div>
+
+        <div id="welcomeMessage" class="welcome-message">
+            <h2>Welcome to Bike Rental</h2>
+            <div class="user-name" id="userName"></div>
+            <div class="user-role" id="userRole"></div>
+            <p id="welcomeText"></p>
+            <div class="action-buttons" id="actionButtons">
+                <!-- Buttons will be dynamically added based on user type -->
+            </div>
+        </div>
+
+        <a href="registration.html" class="back-link">Don't have an account? Register here</a>
+    </div>
+
+    <script>
+        // Check if user is already logged in
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userType = localStorage.getItem('userType');
+            
+            if (token && userType) {
+                if (userType === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+
+        // Toggle between user and admin login forms
+        function toggleLoginType(type) {
+            const userForm = document.getElementById('userLoginForm');
+            const adminForm = document.getElementById('adminLoginForm');
+            const userToggle = document.getElementById('userToggle');
+            const adminToggle = document.getElementById('adminToggle');
+
+            if (type === 'user') {
+                userForm.classList.add('active');
+                adminForm.classList.remove('active');
+                userToggle.classList.add('active');
+                adminToggle.classList.remove('active');
+            } else {
+                userForm.classList.remove('active');
+                adminForm.classList.add('active');
+                userToggle.classList.remove('active');
+                adminToggle.classList.add('active');
+            }
+
+            // Clear messages when switching forms
+            clearMessages();
+        }
+
+        // Show loading state
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Clear all messages
+        function clearMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+
+        // Handle user login
+        async function handleUserLogin() {
+            try {
+                showLoading();
+                clearMessages();
+
+                const email = document.getElementById('userEmail').value;
+                const password = document.getElementById('userPassword').value;
+
+                if (!email || !password) {
+                    showError('Please fill in all fields');
+                    hideLoading();
+                    return;
+                }
+
+                const response = await fetch('http://localhost:3000/api/user-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showError(data.error || 'Login failed');
+                    hideLoading();
+                    return;
+                }
+
+                // Store token and user info
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userType', 'user');
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                showSuccess('Login successful! Redirecting...');
+                hideLoading();
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please try again.');
+                hideLoading();
+            }
+        }
+
+        // Handle admin login
+        async function handleAdminLogin() {
+            try {
+                showLoading();
+                clearMessages();
+
+                const adminId = document.getElementById('adminId').value;
+                const password = document.getElementById('adminPassword').value;
+                const securityCode = document.getElementById('securityCode').value;
+
+                if (!adminId || !password || !securityCode) {
+                    showError('Please fill in all fields');
+                    hideLoading();
+                    return;
+                }
+
+                const response = await fetch('http://localhost:3000/api/admin-login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ adminId, password, securityCode })
+                });
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    showError(data.error || 'Login failed');
+                    hideLoading();
+                    return;
+                }
+
+                // Store token and admin info
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userType', 'admin');
+                localStorage.setItem('user', JSON.stringify(data.admin));
+
+                showSuccess('Login successful! Redirecting...');
+                hideLoading();
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = 'admin-dashboard.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('Login failed. Please try again.');
+                hideLoading();
+            }
+        }
+
+        // Check auth status when page loads
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 
